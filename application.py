@@ -2,7 +2,7 @@ import os
 from forms import *
 from models import *
 
-from flask import Flask, session, render_template
+from flask import Flask, session, render_template, redirect, url_for, flash
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -13,6 +13,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'thisissecret'
 
 bootstrap = Bootstrap(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -27,6 +30,10 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
+
 @app.route("/")
 def index():
     return render_template("home.html")
@@ -36,9 +43,16 @@ def login():
     form = UserForm()
 
     if form.validate_on_submit():
-        return '<h1>' + form.username.data + ' ' + form.password.data + '<h1>'
+        user = User(username=form.username.data, password=form.password.data)
+        if db.execute("SELECT username FROM users WHERE username = :username AND password = :password", {"username": user.username, "password": user.password}).rowcount == 1:
+                #login_user(user)
+                return redirect(url_for('index'))
+        
+        else:
+            return 'wow'
+            
 
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form)               
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
