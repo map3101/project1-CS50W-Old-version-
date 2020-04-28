@@ -2,22 +2,22 @@ import os
 from forms import *
 from models import *
 
-from flask import Flask, session, render_template, redirect, url_for, flash
+from flask import Flask, session, render_template, redirect, url_for, flash, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_bootstrap import Bootstrap
+
+import requests
+
+from helpers import login_required
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'thisissecret'
 
 bootstrap = Bootstrap(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
 
-# Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
@@ -30,43 +30,54 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
-
 @app.route("/")
 def index():
     return render_template("home.html")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    session.clear()
     form = UserForm()
+    alert = None
 
-    if form.validate_on_submit():
-        user = User(username=form.username.data, password=form.password.data)
-        if db.execute("SELECT username FROM users WHERE username = :username AND password = :password", {"username": user.username, "password": user.password}).rowcount == 1:
-                #login_user(user)
-                return redirect(url_for('index'))
-        
-        else:
-            return 'wow'
+    if request.method == "POST":    #if form.validate_on_submit():
             
-
-    return render_template('login.html', form=form)               
+        if db.execute("SELECT username FROM users WHERE username = :username AND password = :password", {"username": form.username.data, "password": form.password.data}).rowcount == 1:
+            user_id = db.execute("SELECT id FROM users WHERE username = :username AND password = :password", {"username": form.username.data, "password": form.password.data}).fetchone()[0]
+            session["user_id"] = user_id
+            return redirect(url_for('index'))
+            
+        else:
+            alert = 'Invalid username or password'
+            return render_template('login.html', form=form, alert=alert)
+                
+    else:
+        return render_template('login.html', form=form, alert=alert)               
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    session.clear()
     form = UserForm()
+    alert = None
 
-    if form.validate_on_submit():
-        new_user = User(username=form.username.data, password=form.password.data)
+    if request.method == "POST":    #if form.validate_on_submit():
         
+        new_user = User(username=form.username.data, password=form.password.data)
+           
         if db.execute("SELECT username FROM users WHERE username = :new_user", {"new_user": new_user.username}).rowcount == 1:
-            return "<h1>USERNAME NOT AVAILABLE</h1>"
+            alert = 'Username not available'
+            return render_template('signup.html', form=form, alert=alert)
 
         else:
             db.execute("INSERT INTO users (username, password) VALUES (:new_username, :new_password)", {"new_username": new_user.username, "new_password": new_user.password})
             db.commit()
-            return 'USER CREATED'
+            return redirect(url_for('login'))
 
-    return render_template('signup.html', form=form)
+    else:
+        return render_template('signup.html', form=form, alert=alert)
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
