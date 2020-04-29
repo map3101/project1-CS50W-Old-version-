@@ -45,6 +45,7 @@ def login():
         if db.execute("SELECT username FROM users WHERE username = :username AND password = :password", {"username": form.username.data, "password": form.password.data}).rowcount == 1:
             user_id = db.execute("SELECT id FROM users WHERE username = :username AND password = :password", {"username": form.username.data, "password": form.password.data}).fetchone()[0]
             session["user_id"] = user_id
+            session["username"] = form.username.data
             return redirect(url_for('index'))
             
         else:
@@ -81,3 +82,8 @@ def signup():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+@app.route('/search')
+@login_required
+def search():
+    
