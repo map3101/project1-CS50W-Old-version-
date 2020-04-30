@@ -46,7 +46,7 @@ def login():
             user_id = db.execute("SELECT id FROM users WHERE username = :username AND password = :password", {"username": form.username.data, "password": form.password.data}).fetchone()[0]
             session["user_id"] = user_id
             session["username"] = form.username.data
-            return redirect(url_for('index'))
+            return redirect(url_for('search'))
             
         else:
             alert = 'Invalid username or password'
@@ -83,7 +83,22 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
-    
+    form = SearchForm()
+
+    if request.method == "POST":      #criar uma lista que guarde todos os valores do db.execute, criar uma pagina html para renderizar esses resultados
+        if form.parameter.data == '1':    #ISBN
+            results = []
+            
+            return 'Search ISBN'
+        
+        elif form.parameter.data == '2':  #Title
+            return 'Search Title'
+
+        else:                             #Author
+            return 'Search Author'
+
+    else:
+        return render_template('search.html', form=form)
