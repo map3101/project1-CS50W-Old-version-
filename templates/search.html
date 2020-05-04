@@ -16,7 +16,6 @@
             <h5>You can search by ISBN, Title or Author</h5>
             <p>Choose the parameter:</p>
             {{ form.hidden_tag() }}
-            {{ wtf.form_field(form.parameter) }}
             {{ wtf.form_field(form.searchinput) }}
             <button class="btn btn-lg btn-primary btn-block" type="submit">Search</button>
           </form>

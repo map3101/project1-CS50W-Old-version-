@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Book reviews
+{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{url_for('.static', filename='formstyle.css')}}">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+    {% if resultsList %}    
+        {% for item in resultsList %}
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-dark">{{ item }}</li>
+            </ul>
+        {% endfor %}
+    {% else %}
+            <h2>No results found.</h2>
+    {% endif %}
+    </div>
+{% endblock %}

@@ -88,17 +88,9 @@ def logout():
 def search():
     form = SearchForm()
 
-    if request.method == "POST":      #criar uma lista que guarde todos os valores do db.execute, criar uma pagina html para renderizar esses resultados
-        if form.parameter.data == '1':    #ISBN
-            results = []
-            
-            return 'Search ISBN'
-        
-        elif form.parameter.data == '2':  #Title
-            return 'Search Title'
-
-        else:                             #Author
-            return 'Search Author'
-
+    if request.method == "POST":      #criar um dicionário que guarde todos os valores do db.execute, criar uma pagina html para renderizar esses resultados
+        resultsList = list(db.execute("SELECT * FROM books WHERE isbn ILIKE :search OR title ILIKE :search OR author ILIKE :search", {"search": "%" + form.searchinput.data + "%"}).fetchall())
+        return render_template('results.html', resultsList=resultsList)
+                
     else:
         return render_template('search.html', form=form)
