@@ -35,12 +35,12 @@
         </div> 
         </br>  
         <div class="container">
-            <div class="row">
-                <div class="col text-white">
-                    <h3>Showing results for '{{ term }}'</h3>
-                </div>
-            </div>    
-            {% if resultsList %}  
+            {% if resultsList %} 
+                <div class="row">
+                    <div class="col text-white">
+                        <h3>Showing results for '{{ term }}'</h3>
+                    </div>
+                </div>     
                 <div class="card-deck">
                     <div class="row">
                 {% for item in resultsList %}
@@ -58,7 +58,7 @@
                  </div>
                 </div>
             {% else %}
-                    <h2>No results found.</h2>
+                    <h2 class="text-white">No results found for '{{ term }}'</h2>
             {% endif %}
         </div>
 
