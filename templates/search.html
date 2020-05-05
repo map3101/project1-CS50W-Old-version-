@@ -14,7 +14,6 @@
         <form class="form-signin" method="POST" action="/search">
             <h2 class="form-signin-heading">Search</h2>
             <h5>You can search by ISBN, Title or Author</h5>
-            <p>Choose the parameter:</p>
             {{ form.hidden_tag() }}
             {{ wtf.form_field(form.searchinput) }}
             <button class="btn btn-lg btn-primary btn-block" type="submit">Search</button>

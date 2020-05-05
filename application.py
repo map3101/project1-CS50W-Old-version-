@@ -90,7 +90,7 @@ def search():
 
     if request.method == "POST":      #criar um dicionário que guarde todos os valores do db.execute, criar uma pagina html para renderizar esses resultados
         resultsList = list(db.execute("SELECT * FROM books WHERE isbn ILIKE :search OR title ILIKE :search OR author ILIKE :search", {"search": "%" + form.searchinput.data + "%"}).fetchall())
-        return render_template('results.html', resultsList=resultsList)
+        return render_template('results.html', resultsList=resultsList, term=form.searchinput.data)
                 
     else:
         return render_template('search.html', form=form)

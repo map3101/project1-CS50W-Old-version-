@@ -1,23 +1,71 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="{{url_for('.static', filename='resultstyle.css')}}">
 
-{% block title %}
-    Book reviews
-{% endblock %}
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <title>Book reviews</title>
+    </head>
+    <body>
+        <div class="container">    
+            <header>
+                <div class="row">
+                    <div class="col">
+                        <nav class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{url_for('index')}}"><h5>Book Reviews</h5></a>
+                            </li>
+                        </nav>
+                    </div>
+                    <div class="col">    
+                        <ul class="nav justify-content-end">
+                            <li class="nav-item">
+                                <a class="nav-link border-bottom border-light alert-link" href="{{url_for('search')}}">Search again </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link border-bottom border-light alert-link" href="{{url_for('logout')}}">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>    
+        </div> 
+        </br>  
+        <div class="container">
+            <div class="row">
+                <div class="col text-white">
+                    <h3>Showing results for '{{ term }}'</h3>
+                </div>
+            </div>    
+            {% if resultsList %}  
+                <div class="card-deck">
+                    <div class="row">
+                {% for item in resultsList %}
+                <div class="col-3">
+                    <div class="card text-white bg-secondary mb-3" style="width: 18rem; height: 15rem;">
+                        <div class="card-body">
+                            <h4 class="card-title border-bottom border-dark">{{ item[2] }}</h4>
+                            <h5 class="card-title">ISBN: {{ item[1] }}</h5>
+                            <h5 class="card-title">AUTHOR: {{ item[3] }}</h5>
+                            <h5 class="card-title">YEAR: {{ item[4] }}</h5>
+                        </div>
+                    </div>
+                </div>    
+                {% endfor %}
+                 </div>
+                </div>
+            {% else %}
+                    <h2>No results found.</h2>
+            {% endif %}
+        </div>
 
-{% block style %}
-<link rel="stylesheet" href="{{url_for('.static', filename='formstyle.css')}}">
-{% endblock %}
-
-{% block body %}
-    <div class="container">
-    {% if resultsList %}    
-        {% for item in resultsList %}
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-dark">{{ item }}</li>
-            </ul>
-        {% endfor %}
-    {% else %}
-            <h2>No results found.</h2>
-    {% endif %}
-    </div>
-{% endblock %}
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
