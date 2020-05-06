@@ -51,6 +51,7 @@
                             <h5 class="card-title">ISBN: {{ item[1] }}</h5>
                             <h5 class="card-title">AUTHOR: {{ item[3] }}</h5>
                             <h5 class="card-title">YEAR: {{ item[4] }}</h5>
+                            <a href="{{ url_for('book', book_id=item[0]) }}" class="btn btn-primary">See more...</a>
                         </div>
                     </div>
                 </div>    

@@ -41,7 +41,7 @@ def login():
     alert = None
 
     if request.method == "POST":    #if form.validate_on_submit():
-            
+        #check if the user exists and if the credentials are correct, login the user    
         if db.execute("SELECT username FROM users WHERE username = :username AND password = :password", {"username": form.username.data, "password": form.password.data}).rowcount == 1:
             user_id = db.execute("SELECT id FROM users WHERE username = :username AND password = :password", {"username": form.username.data, "password": form.password.data}).fetchone()[0]
             session["user_id"] = user_id
@@ -64,7 +64,7 @@ def signup():
     if request.method == "POST":    #if form.validate_on_submit():
         
         new_user = User(username=form.username.data, password=form.password.data)
-           
+        #check if the username is available
         if db.execute("SELECT username FROM users WHERE username = :new_user", {"new_user": new_user.username}).rowcount == 1:
             alert = 'Username not available'
             return render_template('signup.html', form=form, alert=alert)
@@ -83,14 +83,32 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search/', methods=['GET', 'POST'])
 @login_required
 def search():
     form = SearchForm()
 
-    if request.method == "POST":      #criar um dicionário que guarde todos os valores do db.execute, criar uma pagina html para renderizar esses resultados
+    if request.method == "POST":      #criar uma lista que guarde todos os valores do db.execute, criar uma pagina html para renderizar esses resultados
         resultsList = list(db.execute("SELECT * FROM books WHERE isbn ILIKE :search OR title ILIKE :search OR author ILIKE :search", {"search": "%" + form.searchinput.data + "%"}).fetchall())
         return render_template('results.html', resultsList=resultsList, term=form.searchinput.data)
                 
     else:
         return render_template('search.html', form=form)
+
+@app.route('/search/<int:book_id>')
+@login_required
+def book(book_id):
+    #make sure the book exists
+    if db.execute("SELECT id FROM books WHERE id = :book_id", {"book_id": book_id}).rowcount == 0:
+        return 'ERROR: Book not found'
+    
+    else:
+        #get info about the book and create a Book object to work with the template
+        info = db.execute("SELECT * FROM books WHERE id = :book_id", {"book_id": book_id}).fetchall()
+        for item in info:
+            isbn = item[1]
+            title = item[2]
+            author = item[3]
+            year = item[4]
+        book = Book(isbn=isbn, title=title, author=author, year=year)
+        return render_template('booktemplate.html', book=book)
