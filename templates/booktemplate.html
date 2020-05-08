@@ -25,10 +25,46 @@
             </header>
         </br>
         </div>
-        <div class="container">
-
+        <div class="container border-bottom">
+            <div class="card bg-light">
+                <h5 class="card-header text-center">{{ book.title }}</h5>
+                <div class="card-body text-center">
+                    <div class="row">             
+                        <div class="col-6"> 
+                            <h5 class="card-title">{{ book.author }}</h5>
+                            <p class="card-text">{{ book.year }}</p>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="card-text">Good Reads data</h5>
+                            <p class="card-text"> Average rating: </p>
+                            <p class="card-text"> Review count: </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </br>
         </div>
-            
+        </br>
+        
+        <div class="container">
+            {% if review_tracker == False %}
+            <div class="row">
+                <div class="col-12">
+                    <form method="POST" action="{{ url_for('book', book_id = book_id) }}">
+                        {{ form.hidden_tag() }}
+                        <p>Rating</p>
+                        {{ form.rating }}
+                        <p>Write your review</p>
+                        {{ form.review }}
+                        <button class="btn btn-sm btn-primary btn-block w-25 mx-auto" type="submit">Submit review</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <h5>You already made a review about this</h5>
+            {% endif %}
+        </div>
+
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
