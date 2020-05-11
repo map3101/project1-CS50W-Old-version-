@@ -10,44 +10,43 @@
 
 {% block body %}
     
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <header class="masthead mb-auto">
-      <div class="inner">
-        <h3 class="masthead-brand">Book Reviews</h3>
-        <nav class="nav nav-masthead justify-content-center">
-        {% if session.user_id %}  
-          <a class="nav-link active" href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-          <a class="nav-link active" href="{{ url_for('login') }}">Login</a>
-          <a class="nav-link" href="{{ url_for('signup') }}">Sign up</a>
-        {% endif %}
-        </nav>
-      </div>
-    </header>
-  
+  <div class="container">
+    <header class="blog-header py-3">
+        <div class="row flex-nowrap justify-content-between align-items-center">
+            <div class="col-4 pt-1 text-center">
+                 <a class="blog-header-logo text-dark" href="{{ url_for('index') }}"><h1>Book Reviews</h1></a>
+            </div>
+            {% if session.user_id %}
+            <div class="col-4 d-flex justify-content-end align-items-center">
+              <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+            {% endif %}
+        </div>
+      </header>
+    </br>
+    </div>
+    <div class="container">
     {% if session.user_id %}
-    <main role="main" class="inner cover">
-      <h1 class="cover-heading">Hello, {{ session.username }}.</h1>
-      <p class="lead">Feel free to search for books.</p>
-      <p class="lead">
-        <a href="#" class="btn btn-lg btn-secondary">Go to search page</a>
-      </p>
-    </main>
-
-    {% else %}
-    <main role="main" class="inner cover">
-        <h1 class="cover-heading">Welcome to Book Reviews!</h1>
-        <p class="lead">You must login or sign up to start searching for books.</p>
-      </main>
-    
-    {% endif %}  
-
-    <footer class="mastfoot mt-auto">
-      <div class="inner">
-        <p>Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <div class="row">
+        <div class="col">
+            <h1>Welcome {{ session.username }}!</h1>
+            <h6>Fell free to search for books</h6>
+            <button type="button" class="btn btn-secondary btn-lg" href="{{ url_for('search') }}">Go to search page</button>
+        </div>
       </div>
-    </footer>
-  </div>
+    {% else %}
+    <div class="jumbotron">
+      <h1 class="display-4">Welcome to Book reviews!</h1>
+      <p class="lead">You must login or signup</p>
+      <hr class="my-4">
+      <a class="btn btn-secondary btn-lg" href="{{ url_for('login') }}">Login</a>
+      <a class="btn btn-secondary btn-lg" href="{{ url_for('signup') }}">Signup</a>
+    </div>
+    {% endif %}
+    <footer>
+      <p>© 2020 Book reviews </p>
+    </footer>  
+    </div>
   
   
   

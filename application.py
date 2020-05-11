@@ -95,7 +95,7 @@ def search():
     else:
         return render_template('search.html', form=form)
 
-@app.route('/search/<int:book_id>', methods=['GET', 'POST'])
+@app.route('/books/<int:book_id>', methods=['GET', 'POST'])
 @login_required
 def book(book_id):
     form = ReviewForm()
@@ -110,11 +110,14 @@ def book(book_id):
         year = item[4]
     book = Book(isbn=isbn, title=title, author=author, year=year)
 
-    #save the user_id
-    user = session["user_id"]
+    #save the user info
+    user = session["username"]
+
+    #save all the reviews in a list and organize the infos
+    reviewsList = list(db.execute("SELECT * FROM reviews WHERE book_id = :book_id", {"book_id": book_id}).fetchall())
 
     if request.method == "POST":
-        db.execute("INSERT INTO reviews (text, rating, user_id, book_id) VALUES (:text, :rating, :user_id, :book_id)", {"text": form.review.data, "rating": form.rating.data, "user_id": user, "book_id": book_id})
+        db.execute("INSERT INTO reviews (text, rating, book_id, username) VALUES (:text, :rating, :book_id, :username)", {"text": form.review.data, "rating": form.rating.data, "book_id": book_id, "username": user})
         db.commit()
         return redirect(url_for('book', book_id = book_id))
         
@@ -126,10 +129,10 @@ def book(book_id):
         
         else:
             #check if the user already made a review
-            if db.execute("SELECT review_id FROM reviews WHERE user_id = :user_id AND book_id = :book_id", {"user_id": user, "book_id": book_id}).rowcount == 1:
+            if db.execute("SELECT review_id FROM reviews WHERE username = :username AND book_id = :book_id", {"username": user, "book_id": book_id}).rowcount == 1:
                 review_tracker = True
-                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id)
+                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id, reviewsList=reviewsList)
             
             else:
                 review_tracker = False
-                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id)
+                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id, reviewsList=reviewsList)
