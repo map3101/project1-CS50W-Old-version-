@@ -33,11 +33,12 @@
                         <div class="col-6"> 
                             <h5 class="card-title">{{ book.author }}</h5>
                             <p class="card-text">{{ book.year }}</p>
+                            <p class="card-text">ISBN: {{ book.isbn }}</p>
                         </div>
                         <div class="col-6">
                             <h5 class="card-text">Good Reads data</h5>
-                            <p class="card-text"> Average rating: </p>
-                            <p class="card-text"> Review count: </p>
+                            <p class="card-text"> Rating count: {{ GRinfo[0]['work_ratings_count'] }}</p>
+                            <p class="card-text">Average rating: {{ GRinfo[0]['average_rating'] }}</p>
                         </div>
                     </div>
                 </div>
@@ -49,6 +50,7 @@
         <div class="container">
             {% if review_tracker == False %}
             <div class="row">
+                <h5>Make your review</h5>
                 <div class="col-12">
                     <form method="POST" action="{{ url_for('book', book_id = book_id) }}">
                         {{ form.hidden_tag() }}
@@ -68,15 +70,19 @@
             <h3>Reviews:</h3>
             <div class="row">
                 <div class="col-12">
-                    {% for item in reviewsList %}
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h5 class="card-title">User: {{ item[4] }}</h5>
-                                <h5 class="card-subtitle">Rating: {{ item[2] }}</h5>
-                                <p class="card-text"> {{ item[1] }} </p>
+                    {% if reviewsList %}
+                        {% for item in reviewsList %}
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">User: {{ item[4] }}</h5>
+                                    <h5 class="card-subtitle">Rating: {{ item[2] }}</h5>
+                                    <p class="card-text"> {{ item[1] }} </p>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                            <h6>No review has been made</h6>
+                    {% endif %}
                 </div>        
             </div>
         </div>

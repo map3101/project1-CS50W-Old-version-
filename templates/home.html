@@ -31,7 +31,7 @@
         <div class="col">
             <h1>Welcome {{ session.username }}!</h1>
             <h6>Fell free to search for books</h6>
-            <button type="button" class="btn btn-secondary btn-lg" href="{{ url_for('search') }}">Go to search page</button>
+            <a class="btn btn-secondary btn-lg" href="{{ url_for('search') }}">Go to search page</a>
         </div>
       </div>
     {% else %}

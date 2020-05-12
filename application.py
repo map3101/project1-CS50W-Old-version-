@@ -1,4 +1,4 @@
-import os
+import os, json
 from forms import *
 from models import *
 
@@ -110,10 +110,22 @@ def book(book_id):
         year = item[4]
     book = Book(isbn=isbn, title=title, author=author, year=year)
 
+    """GoodReadsAPI"""
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "rfNzRu53CcBeFfWGQIBg", "isbns": book.isbn})
+    
+    #convert to JSON 
+    resJson = res.json()
+    resJson = resJson['books'][0]
+    
+    #save the info 
+    GRinfo = []
+    GRinfo.append(resJson)
+
     #save the user info
     user = session["username"]
 
-    #save all the reviews in a list and organize the infos
+    """User reviews"""
+    #save all the reviews in a list
     reviewsList = list(db.execute("SELECT * FROM reviews WHERE book_id = :book_id", {"book_id": book_id}).fetchall())
 
     if request.method == "POST":
@@ -131,8 +143,8 @@ def book(book_id):
             #check if the user already made a review
             if db.execute("SELECT review_id FROM reviews WHERE username = :username AND book_id = :book_id", {"username": user, "book_id": book_id}).rowcount == 1:
                 review_tracker = True
-                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id, reviewsList=reviewsList)
+                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id, reviewsList=reviewsList, GRinfo=GRinfo)
             
             else:
                 review_tracker = False
-                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id, reviewsList=reviewsList)
+                return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id, reviewsList=reviewsList, GRinfo=GRinfo)
