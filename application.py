@@ -2,7 +2,7 @@ import os, json
 from forms import *
 from models import *
 
-from flask import Flask, session, render_template, redirect, url_for, flash, request
+from flask import Flask, session, render_template, redirect, url_for, request, jsonify
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -113,7 +113,7 @@ def book(book_id):
     """GoodReadsAPI"""
     res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "rfNzRu53CcBeFfWGQIBg", "isbns": book.isbn})
     
-    #convert to JSON 
+    #JSON 
     resJson = res.json()
     resJson = resJson['books'][0]
     
@@ -148,3 +148,50 @@ def book(book_id):
             else:
                 review_tracker = False
                 return render_template('booktemplate.html', book=book, form=form, review_tracker=review_tracker, book_id=book_id, reviewsList=reviewsList, GRinfo=GRinfo)
+
+@app.route('/api/<isbn>', methods=['GET'])
+def api(isbn):
+
+    #make sure the book exists
+    if db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).rowcount == 0:
+        return 'ERROR: Book not found'
+    
+    else:
+        
+        #get info about the book and create a Book object.
+        info = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+        for item in info:
+            book_id = item[0]
+            title = item[2]
+            author = item[3]
+            year = item[4]
+        book = Book(isbn=isbn, title=title, author=author, year=year)
+
+        #get the review count 
+        review_count = db.execute("SELECT review_id FROM reviews WHERE book_id = :book_id", {"book_id": book_id}).rowcount
+
+        """get the avg score"""
+        #save all ratings on a list
+        reviewsList = list(db.execute("SELECT rating FROM reviews WHERE book_id = :book_id", {"book_id": book_id}).fetchall())
+
+        #find the average of the list
+        if reviewsList:
+            total = 0.0
+            count = 0
+            for item in reviewsList:
+                total += item[0]
+                count += 1
+            score_avg = total / count
+
+        else:
+            score_avg = 0
+
+        #return jsonify
+        return jsonify({
+            "title": book.title,
+            "author": book.author,
+            "year": book.year,
+            "isbn": book.isbn,
+            "review_count": review_count,
+            "average_score": score_avg
+        })
