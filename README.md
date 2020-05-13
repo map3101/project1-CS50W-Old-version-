@@ -8,4 +8,4 @@ This is a site where the user can register or log in to search books contained i
 
 **GoodReads API:** On each book page the rating count and average rating from GoosReads will be displayed(if available).
 
-**API:** The user can make a GET request to /api/<isbn>, where <isbn> is an ISBN number. After doing this request the website will return a JSON response containing the book’s title, author, publication date, ISBN number, review count, and average score.
+**API:** The user can make a GET request to /api/isbn, where isbn is an ISBN number. After doing this request the website will return a JSON response containing the book’s title, author, publication date, ISBN number, review count, and average score.
