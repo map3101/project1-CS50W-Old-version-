@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
-        <link rel="stylesheet" href="{{url_for('.static', filename='bookstyle.css')}}">
+        <link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <title> {{ book.title }} </title>
@@ -36,9 +36,14 @@
                             <p class="card-text">ISBN: {{ book.isbn }}</p>
                         </div>
                         <div class="col-6">
-                            <h5 class="card-text">Good Reads data</h5>
-                            <p class="card-text"> Rating count: {{ GRinfo[0]['work_ratings_count'] }}</p>
-                            <p class="card-text">Average rating: {{ GRinfo[0]['average_rating'] }}</p>
+                            {% if GRinfo %}
+                                <h5 class="card-text">Goodreads review data:</h5>
+                                <p class="card-text"> Rating count: {{ GRinfo[0]['work_ratings_count'] }}</p>
+                                <p class="card-text">Average rating: {{ GRinfo[0]['average_rating'] }}</p>
+                                <a class="btn btn-secondary" href="https://www.goodreads.com/search?utf8=✓&query={{ book.title }}">Search on Goodreads</a>
+                            {% else %}
+                                <h5 class="card-text">This book has no reviews from Goodreads.</h5>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -55,7 +60,12 @@
                     <form method="POST" action="{{ url_for('book', book_id = book_id) }}">
                         {{ form.hidden_tag() }}
                         <p>Rating</p>
-                        {{ form.rating }}
+                        {% for subfield in form.rating %}    
+                            <tr>
+                                <td>{{ subfield.label }}</td>
+                                <td>{{ subfield }}</td>
+                            </tr>
+                        {% endfor %}
                         <p>Write your review</p>
                         {{ form.review }}
                         <button class="btn btn-sm btn-primary btn-block w-25 mx-auto" type="submit">Submit review</button>
@@ -63,7 +73,7 @@
                 </div>
             </div>
             {% else %}
-            <h5>You already made a review about this</h5>
+            <h5>You've already reviewed this book.</h5>
             {% endif %}
         </br>
         </br>
